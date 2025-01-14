@@ -1,17 +1,8 @@
-// Copyright 2020-2023 IOTA Stiftung
-// SPDX-License-Identifier: Apache-2.0
-
-use std::path::PathBuf;
+// utility.rs
 
 use anyhow::Context;
-use identity_iota::iota::IotaDocument;
-use identity_iota::storage::JwkDocumentExt;
-use identity_iota::storage::JwkMemStore;
-use identity_iota::storage::KeyIdMemstore;
-use identity_iota::storage::Storage;
-use identity_iota::verification::jws::JwsAlgorithm;
-use identity_iota::verification::MethodScope;
-
+use anyhow::Result;
+use identity_iota::core::Url;
 use identity_iota::iota::rebased::client::convert_to_address;
 use identity_iota::iota::rebased::client::get_sender_public_key;
 use identity_iota::iota::rebased::client::IdentityClient;
@@ -19,55 +10,22 @@ use identity_iota::iota::rebased::client::IdentityClientReadOnly;
 use identity_iota::iota::rebased::client::IotaKeySignature;
 use identity_iota::iota::rebased::transaction::Transaction;
 use identity_iota::iota::rebased::utils::request_funds;
-use identity_iota::storage::JwkStorage;
-use identity_iota::storage::KeyIdStorage;
-use identity_iota::storage::KeyType;
-use identity_iota::storage::StorageSigner;
-use identity_stronghold::StrongholdStorage;
+use identity_iota::iota::IotaDocument;
+use identity_iota::storage::{JwkMemStore, JwkStorage, KeyIdMemstore, Storage};
+use identity_iota::storage::{KeyType, StorageSigner};
+use identity_iota::verification::jws::JwsAlgorithm;
+use identity_iota::verification::MethodScope;
+use iota_sdk::types::crypto::IotaKeyPair;
 use iota_sdk::IotaClientBuilder;
 use iota_sdk::IOTA_LOCAL_NETWORK_URL;
-use iota_sdk_legacy::client::secret::stronghold::StrongholdSecretManager;
-use iota_sdk_legacy::client::Password;
-use rand::distributions::DistString;
 use secret_storage::Signer;
-use serde_json::Value;
-
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
 pub const TEST_GAS_BUDGET: u64 = 50_000_000;
-
 pub type MemStorage = Storage<JwkMemStore, KeyIdMemstore>;
 
-pub async fn create_did_document<K, I, S>(
-    identity_client: &IdentityClient<S>,
-    storage: &Storage<K, I>,
-) -> anyhow::Result<(IotaDocument, String)>
-where
-    K: identity_iota::storage::JwkStorage,
-    I: identity_iota::storage::KeyIdStorage,
-    S: Signer<IotaKeySignature> + Sync,
-{
-    // Create a new DID document with a placeholder DID.
-    let mut unpublished: IotaDocument = IotaDocument::new(identity_client.network());
-    let verification_method_fragment = unpublished
-        .generate_method(
-            storage,
-            JwkMemStore::ED25519_KEY_TYPE,
-            JwsAlgorithm::EdDSA,
-            None,
-            MethodScope::VerificationMethod,
-        )
-        .await?;
-
-    let document = identity_client
-        .publish_did_document(unpublished)
-        .execute_with_gas(TEST_GAS_BUDGET, identity_client)
-        .await?
-        .output;
-
-    Ok((document, verification_method_fragment))
-}
-
-pub fn get_memstorage() -> Result<MemStorage, anyhow::Error> {
+pub async fn get_memstorage() -> anyhow::Result<MemStorage> {
     Ok(MemStorage::new(JwkMemStore::new(), KeyIdMemstore::new()))
 }
 
@@ -75,8 +33,8 @@ pub async fn get_client_and_create_account<K, I>(
     storage: &Storage<K, I>,
 ) -> Result<IdentityClient<StorageSigner<K, I>>, anyhow::Error>
 where
-    K: JwkStorage,
-    I: KeyIdStorage,
+    K: identity_iota::storage::JwkStorage,
+    I: identity_iota::storage::KeyIdStorage,
 {
     let api_endpoint =
         std::env::var("API_ENDPOINT").unwrap_or_else(|_| IOTA_LOCAL_NETWORK_URL.to_string());
@@ -113,4 +71,27 @@ where
     let identity_client = IdentityClient::new(read_only_client, signer).await?;
 
     Ok(identity_client)
+}
+
+/// Creates and publishes a new DID Document
+pub async fn create_did_document<K, I, S>(
+    identity_client: &IdentityClient<S>,
+    storage: &Storage<K, I>,
+) -> anyhow::Result<IotaDocument>
+where
+    K: identity_iota::storage::JwkStorage,
+    I: identity_iota::storage::KeyIdStorage,
+    S: Signer<IotaKeySignature> + Sync,
+{
+    // Create a new DID document with a placeholder DID.
+    let mut unpublished: IotaDocument = IotaDocument::new(identity_client.network());
+
+    // Publish the DID document and get the output.
+    let document = identity_client
+        .publish_did_document(unpublished)
+        .execute_with_gas(TEST_GAS_BUDGET, identity_client)
+        .await?
+        .output;
+
+    Ok(document)
 }

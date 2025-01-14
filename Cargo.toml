@@ -18,4 +18,8 @@ identity_stronghold = { git = "https://github.com/iotaledger/identity.rs", branc
 name = "create_did"
 path = "src/create_did.rs"
 
+[[bin]]
+name = "add_verification_method"
+path = "src/add_verification_method.rs"
+
 
