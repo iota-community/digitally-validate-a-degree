@@ -2,19 +2,22 @@
 
 mod utility;
 use anyhow::Result;
-use identity_iota::{did::DID, iota::{DidResolutionHandler, IotaDocument}, storage::{JwkDocumentExt, JwkMemStore}, verification::{jws::JwsAlgorithm, verification_method, MethodScope}};
+use identity_iota::{did::DID, iota::{DidResolutionHandler, IotaDID, IotaDocument}, storage::{JwkDocumentExt, JwkMemStore}, verification::{jws::JwsAlgorithm, verification_method, MethodScope}};
+use iota_sdk::IOTA_LOCAL_NETWORK_URL;
 use std::{env, fmt::format};
 use crate::utility::{get_memstorage, get_client_and_create_account};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // Get the DID ID from user input or a configuration file
+    // Get the DID ID from user input
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
         eprintln!("Usage: {} <DID_ID>", args[0]);
         std::process::exit(1);
     }
-    let did_id = &args[1];
+    let did_id_str = &args[1];
+    let network_name = "local";
+    let did_id = IotaDID::from_object_id(&did_id_str, &IOTA_LOCAL_NETWORK_URL);
 
     println!("Adding verification method to DID: {}", did_id);
 
