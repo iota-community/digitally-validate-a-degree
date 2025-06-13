@@ -44,7 +44,7 @@ cargo build
 - **holder.rs:** Takes a VC JWT and creates a signed VP JWT
 - **verifier.rs:** Takes a VP JWT and validates it
 
-1. **Run the Issuer
+1. **Run the Issuer**
 
 ```bash
 cargo run --bin issuer
@@ -52,7 +52,7 @@ cargo run --bin issuer
 
 This prints a VC JWT. Copy this JWT.
 
-2. **Run the Holder (with VC JWT input)
+2. **Run the Holder (with VC JWT input)**
 
 ```bash
 cargo run --bin holder -- --vc "<PASTE_VC_JWT_HERE>"
