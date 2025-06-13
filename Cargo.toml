@@ -6,21 +6,17 @@ edition = "2021"
 publish = false
 
 [dependencies]
+
+identity_iota = { git = "https://github.com/iotaledger/identity.rs", tag = "v1.6.0-beta"}
 anyhow = "1.0.62"
-identity_eddsa_verifier = { path = "../identity_eddsa_verifier", default-features = false, features = [
-    "ed25519",
-] }
-identity_storage = { path = "../identity_storage" }
-identity_stronghold = { path = "../identity_stronghold", default-features = false, features = [
-    "send-sync-storage",
-] }
+
 iota-sdk = { git = "https://github.com/iotaledger/iota.git", package = "iota-sdk", tag = "v0.12.0-rc" }
 iota-sdk-legacy = { package = "iota-sdk", version = "1.0", default-features = false, features = [
     "tls",
     "client",
     "stronghold",
 ] }
-json-proof-token.workspace = true
+
 product_common = { git = "https://github.com/iotaledger/product-core.git", tag = "v0.2.1", package = "product_common", features = [
     "core-client",
     "transaction",
@@ -36,29 +32,18 @@ tokio = { version = "1.43", default-features = false, features = [
     "macros",
 ] }
 
-[dependencies.identity_iota]
-path = "../identity_iota"
-default-features = false
-features = [
-    "domain-linkage",
-    "jpt-bbs-plus",
-    "iota-client",
-    "send-sync",
-    "memstore",
-    "resolver",
-    "revocation-bitmap",
-    "sd-jwt",
-    "status-list-2021",
-    "keytool",
-]
-
 [lib]
 path = "utils.rs"
 
 [[bin]]
-name = "create_did"
-path = "create_did.rs"
+name = "issuer"
+path = "issuer.rs"
 
 [[bin]]
-name = "add_verification_method"
-path = "add_verification_method.rs"
+name = "holder"
+path = "holder.rs"
+
+[[bin]]
+name = "verifier"
+path = "verifier.rs"
+
