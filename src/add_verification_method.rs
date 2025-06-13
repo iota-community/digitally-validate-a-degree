@@ -1,11 +1,11 @@
 // add_verification.rs
 
-mod utility;
+mod utils;
 use anyhow::Result;
 use identity_iota::{did::DID, iota::{DidResolutionHandler, IotaDID, IotaDocument}, storage::{JwkDocumentExt, JwkMemStore}, verification::{jws::JwsAlgorithm, verification_method, MethodScope}};
 use iota_sdk::IOTA_LOCAL_NETWORK_URL;
 use std::{env, fmt::format};
-use crate::utility::{get_memstorage, get_client_and_create_account};
+use crate::utils::{get_memstorage, get_client_and_create_account};
 
 #[tokio::main]
 async fn main() -> Result<()> {
