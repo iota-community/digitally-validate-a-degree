@@ -100,7 +100,8 @@ async fn main() -> anyhow::Result<()> {
     // ===========================================================================
     // Step 3: Issuer sends the Verifiable Credential to the holder.
     // ===========================================================================
-    println!("Sending credential (as JWT) to the holder: {credential:#}");
+    // println!("Sending credential to the holder: {credential:#}");
+    println!("Sending verified credential as JWT to holder: {credential_jwt:#}");
 
     Ok(())
 }
