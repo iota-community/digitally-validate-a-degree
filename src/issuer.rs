@@ -54,13 +54,13 @@ async fn main() -> anyhow::Result<()> {
 
     // Create a credential subject indicating the degree earned by Alice.
     let subject: Subject = Subject::from_json_value(json!({
-      "id": holder_document.id().as_str(),
-      "name": "Alice",
-      "degree": {
+        "id": holder_document.id().as_str(),
+        "name": "Alice",
+        "degree": {
         "type": "BachelorDegree",
         "name": "Bachelor of Science and Arts",
-      },
-      "GPA": "4.0",
+    },
+        "GPA": "4.0",
     }))?;
 
     // Build credential using subject above and issuer.
