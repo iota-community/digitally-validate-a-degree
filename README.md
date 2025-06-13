@@ -30,11 +30,13 @@ A Rust-based CLI application to issue, present, and verify academic credentials 
 ```bash
 git clone https://github.com/your-username/digitally_validate_degree.git
 cd digitally_validate_degree
+```
 
 2. **Install dependencies**
 
 ```bash
 cargo build
+```
 
 ## 🧪 Usage
 
@@ -46,6 +48,7 @@ cargo build
 
 ```bash
 cargo run --bin issuer
+```
 
 This prints a VC JWT. Copy this JWT.
 
@@ -53,6 +56,7 @@ This prints a VC JWT. Copy this JWT.
 
 ```bash
 cargo run --bin holder -- --vc "<PASTE_VC_JWT_HERE>"
+```
 
 This signs a Verifiable Presentation and outputs the VP JWT.
 
@@ -60,6 +64,7 @@ This signs a Verifiable Presentation and outputs the VP JWT.
 
 ```bash
 cargo run --bin verifier -- --vp "<PASTE_VP_JWT_HERE>"
+```
 
 This validates the presentation and prints the validated data.
 
