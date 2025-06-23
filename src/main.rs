@@ -1,3 +1,4 @@
+mod utils;
 mod issuer;
 mod holder;
 mod verifier;

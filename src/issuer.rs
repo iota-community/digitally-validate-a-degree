@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use crate::utils;
+use crate::utils::*;
 use identity_eddsa_verifier::EdDSAJwsVerifier;
 use identity_iota::core::Object;
 use identity_iota::credential::DecodedJwtCredential;
