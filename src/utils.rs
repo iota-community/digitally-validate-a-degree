@@ -1,25 +1,26 @@
 // utility.rs
 
 use std::path::PathBuf;
-
 use anyhow::Context;
 use identity_iota::iota::IotaDocument;
 use identity_iota::iota_interaction::OptionalSync;
 use identity_iota::storage::JwkDocumentExt;
+// use identity_iota::JwkMemStore;
+// use identity_iota::KeyIdMemstore;
 use identity_iota::storage::JwkMemStore;
 use identity_iota::storage::KeyIdMemstore;
 use identity_iota::storage::Storage;
 use identity_iota::verification::jws::JwsAlgorithm;
 use identity_iota::verification::MethodScope;
 
-use identity_iota::iota::rebased::client::IdentityClient;
+use identity_iota::iota::client::IdentityClient;
 use identity_iota::iota::rebased::client::IdentityClientReadOnly;
 use identity_iota::iota::rebased::client::IotaKeySignature;
 use identity_iota::iota::rebased::utils::request_funds;
-use identity_storage::JwkStorage;
-use identity_storage::KeyIdStorage;
-use identity_storage::KeyType;
-use identity_storage::StorageSigner;
+use identity_iota::storage::key_storage::JwkStorage;
+use identity_iota::storage::KeyIdStorage;
+use identity_iota::storage::KeyType;
+use identity_iota::storage::StorageSigner;
 use identity_stronghold::StrongholdStorage;
 use iota_sdk::types::base_types::IotaAddress;
 use iota_sdk::IotaClientBuilder;
@@ -38,8 +39,10 @@ pub async fn create_did_document<K, I, S>(
     storage: &Storage<K, I>,
 ) -> anyhow::Result<(IotaDocument, String)>
 where
-    K: identity_storage::JwkStorage,
-    I: identity_storage::KeyIdStorage,
+    // K: identity_storage::JwkStorage,
+    K: identity_iota::storage::JwkStorage,
+    I: identity_iota::storage::KeyIdStorage,
+    // I: identity_storage::KeyIdStorage,
     S: Signer<IotaKeySignature> + OptionalSync,
 {
     // Create a new DID document with a placeholder DID.

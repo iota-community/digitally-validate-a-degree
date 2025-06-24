@@ -7,8 +7,8 @@ publish = false
 
 [dependencies]
 
-identity_iota = { git = "https://github.com/iotaledger/identity.rs", tag = "v1.6.0-beta"}
-anyhow = "1.0.62"
+identity_iota = { version = "1.5.0", features = ["memstore"] }
+anyhow = "1.0.97"
 
 iota-sdk = { git = "https://github.com/iotaledger/iota.git", package = "iota-sdk", tag = "v0.12.0-rc" }
 iota-sdk-legacy = { package = "iota-sdk", version = "1.0", default-features = false, features = [
@@ -31,9 +31,10 @@ tokio = { version = "1.43", default-features = false, features = [
     "rt",
     "macros",
 ] }
+identity_stronghold = "1.5.1"
 
 [lib]
-path = "utils.rs"
+path = "src/utils.rs"
 
 [[bin]]
 name = "issuer"
