@@ -1,26 +1,25 @@
 // utility.rs
 
 use std::path::PathBuf;
+
 use anyhow::Context;
 use identity_iota::iota::IotaDocument;
 use identity_iota::iota_interaction::OptionalSync;
 use identity_iota::storage::JwkDocumentExt;
-// use identity_iota::JwkMemStore;
-// use identity_iota::KeyIdMemstore;
 use identity_iota::storage::JwkMemStore;
 use identity_iota::storage::KeyIdMemstore;
 use identity_iota::storage::Storage;
 use identity_iota::verification::jws::JwsAlgorithm;
 use identity_iota::verification::MethodScope;
 
-use identity_iota::iota::client::IdentityClient;
+use identity_iota::iota::rebased::client::IdentityClient;
 use identity_iota::iota::rebased::client::IdentityClientReadOnly;
 use identity_iota::iota::rebased::client::IotaKeySignature;
 use identity_iota::iota::rebased::utils::request_funds;
-use identity_iota::storage::key_storage::JwkStorage;
-use identity_iota::storage::KeyIdStorage;
-use identity_iota::storage::KeyType;
-use identity_iota::storage::StorageSigner;
+use identity_storage::JwkStorage;
+use identity_storage::KeyIdStorage;
+use identity_storage::KeyType;
+use identity_storage::StorageSigner;
 use identity_stronghold::StrongholdStorage;
 use iota_sdk::types::base_types::IotaAddress;
 use iota_sdk::IotaClientBuilder;
@@ -39,10 +38,8 @@ pub async fn create_did_document<K, I, S>(
     storage: &Storage<K, I>,
 ) -> anyhow::Result<(IotaDocument, String)>
 where
-    // K: identity_storage::JwkStorage,
-    K: identity_iota::storage::JwkStorage,
-    I: identity_iota::storage::KeyIdStorage,
-    // I: identity_storage::KeyIdStorage,
+    K: identity_storage::JwkStorage,
+    I: identity_storage::KeyIdStorage,
     S: Signer<IotaKeySignature> + OptionalSync,
 {
     // Create a new DID document with a placeholder DID.
@@ -126,30 +123,6 @@ where
 
 pub async fn get_memstorage() -> anyhow::Result<MemStorage> {
     Ok(MemStorage::new(JwkMemStore::new(), KeyIdMemstore::new()))
-}
-
-pub fn get_stronghold_storage(
-    path: Option<PathBuf>,
-) -> Result<Storage<StrongholdStorage, StrongholdStorage>, anyhow::Error> {
-    // Stronghold snapshot path.
-    let path = path.unwrap_or_else(random_stronghold_path);
-
-    // Stronghold password.
-    let password = Password::from("secure_password".to_owned());
-
-    let stronghold = StrongholdSecretManager::builder()
-        .password(password.clone())
-        .build(path.clone())?;
-
-    // Create a `StrongholdStorage`.
-    // `StrongholdStorage` creates internally a `SecretManager` that can be
-    // referenced to avoid creating multiple instances around the same stronghold snapshot.
-    let stronghold_storage = StrongholdStorage::new(stronghold);
-
-    Ok(Storage::new(
-        stronghold_storage.clone(),
-        stronghold_storage.clone(),
-    ))
 }
 
 pub fn pretty_print_json(label: &str, value: &str) {

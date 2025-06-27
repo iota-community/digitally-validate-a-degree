@@ -1,12 +1,10 @@
+# crates/shared_utils/Cargo.toml
 [package]
-name = "digitaly_validate_degree"
-version = "1.6.0-beta"
-authors = ["IOTA Stiftung"]
+name = "shared_utils"
+version = "0.1.0"
 edition = "2021"
-publish = false
 
 [dependencies]
-
 identity_iota = { git = "https://github.com/iotaledger/identity.rs", tag = "v1.6.0-beta.2" }
 anyhow = "1.0.62"
 identity-eddsa-verifier = { git = "https://github.com/iotaledger/identity.rs", package = "identity_eddsa_verifier", tag = "v1.6.0-beta.2" }
@@ -37,17 +35,3 @@ tokio = { version = "1.43", default-features = false, features = [
     "rt",
     "macros",
 ] }
-
-shared_utils = { path = "./crates/shared_utils" }
-
-[[bin]]
-name = "issuer"
-path = "src/issuer.rs"
-
-[[bin]]
-name = "holder"
-path = "src/holder.rs"
-
-[[bin]]
-name = "verifier"
-path = "src/verifier.rs"

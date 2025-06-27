@@ -1,30 +1,18 @@
 //! cargo run --release --example 6_create_vp
 
-use std::collections::HashMap;
+// use shared_utils::{create_did_document, get_funded_client, get_memstorage};
+use shared_utils::create_did_document;
+use shared_utils::get_memstorage;
+use shared_utils::get_funded_client;
 
-// use crate::utils::*;
-use utils;
 use identity_eddsa_verifier::EdDSAJwsVerifier;
 use identity_iota::core::Object;
-use identity_iota::credential::DecodedJwtCredential;
-use identity_iota::credential::DecodedJwtPresentation;
 use identity_iota::credential::Jwt;
-use identity_iota::credential::JwtCredentialValidatorUtils;
-use identity_iota::credential::JwtPresentationOptions;
-use identity_iota::credential::JwtPresentationValidationOptions;
-use identity_iota::credential::JwtPresentationValidator;
-use identity_iota::credential::JwtPresentationValidatorUtils;
-use identity_iota::credential::Presentation;
-use identity_iota::credential::PresentationBuilder;
-use identity_iota::did::CoreDID;
-use identity_iota::document::verifiable::JwsVerificationOptions;
 use identity_iota::storage::JwkDocumentExt;
 use identity_iota::storage::JwsSignatureOptions;
 
 use identity_iota::core::json;
-use identity_iota::core::Duration;
 use identity_iota::core::FromJson;
-use identity_iota::core::Timestamp;
 use identity_iota::core::Url;
 use identity_iota::credential::Credential;
 use identity_iota::credential::CredentialBuilder;
@@ -32,22 +20,25 @@ use identity_iota::credential::FailFast;
 use identity_iota::credential::JwtCredentialValidationOptions;
 use identity_iota::credential::JwtCredentialValidator;
 use identity_iota::credential::Subject;
-use identity_iota::credential::SubjectHolderRelationship;
 use identity_iota::did::DID;
-use identity_iota::iota::IotaDocument;
-use identity_iota::resolver::Resolver;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // ===========================================================================
-    // Step 1: Create identity for the issuer.
+    // Step 1: Create identity for the issuer and holder.
     // ===========================================================================
 
     // create new issuer account with did document
-    let issuer_storage = get_memstorage()?;
+    let issuer_storage = get_memstorage().await?;
     let issuer_identity_client = get_funded_client(&issuer_storage).await?;
     let (issuer_document, issuer_vm_fragment) =
         create_did_document(&issuer_identity_client, &issuer_storage).await?;
+
+    // create new holder account with did document
+    let holder_storage = get_memstorage().await?;
+    let holder_identity_client = get_funded_client(&holder_storage).await?;
+    let (holder_document, _) =
+        create_did_document(&holder_identity_client, &holder_storage).await?;
 
     // ===========================================================================
     // Step 2: Issuer creates and signs a Verifiable Credential.
@@ -102,7 +93,7 @@ async fn main() -> anyhow::Result<()> {
     // Step 3: Issuer sends the Verifiable Credential to the holder.
     // ===========================================================================
     // println!("Sending credential to the holder: {credential:#}");
-    println!("Sending verified credential as JWT to holder: {credential_jwt:#}");
+    println!("Sending verified credential as JWT to holder: {credential:#}");
 
     Ok(())
 }
