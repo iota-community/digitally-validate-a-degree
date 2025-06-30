@@ -53,8 +53,10 @@ use shared_utils::pretty_print_json;
     // Holder sends a verifiable presentation to the verifier.
     // ===========================================================================
     println!("Sending presentation (as JWT) to the verifier: {presentation:#}");
+    // println!("{}", presentation_jwt.as_str());
+
     //pretty_print_json("Verifiable Presentation JWT", &presentation.to_string());
-    pretty_print_json("Verifiable Presentation JWT", &presentation_jwt.as_str());
+    // pretty_print_json("Verifiable Presentation JWT", &presentation_jwt.as_str());
 
 
     Ok(())

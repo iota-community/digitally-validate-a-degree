@@ -1,3 +1,4 @@
+use identity_iota::credential::DecodedJwtCredential;
 // use shared_utils::{create_did_document, get_funded_client, get_memstorage};
 use shared_utils::create_did_document;
 use shared_utils::get_memstorage;
@@ -76,6 +77,7 @@ async fn main() -> anyhow::Result<()> {
 
     // Validate the credential's signature using the issuer's DID Document, the credential's semantic structure,
     // that the issuance date is not in the future and that the expiration date is not in the past:
+    let decoded_credential: DecodedJwtCredential<Object> =
     JwtCredentialValidator::with_signature_verifier(EdDSAJwsVerifier::default())
         .validate::<_, Object>(
             &credential_jwt,
