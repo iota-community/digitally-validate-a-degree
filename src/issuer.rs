@@ -1,5 +1,3 @@
-//! cargo run --release --example 6_create_vp
-
 // use shared_utils::{create_did_document, get_funded_client, get_memstorage};
 use shared_utils::create_did_document;
 use shared_utils::get_memstorage;
