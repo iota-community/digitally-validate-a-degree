@@ -6,37 +6,22 @@ edition = "2021"
 publish = false
 
 [dependencies]
+identity_iota = { git = "https://github.com/iotaledger/identity.rs", tag = "wasm-v1.6.0-beta.4" }
+identity_storage = { git = "https://github.com/iotaledger/identity.rs", package = "identity_storage", tag = "wasm-v1.6.0-beta.4", features = ["send-sync-storage"] }
+identity_stronghold = { git = "https://github.com/iotaledger/identity.rs", package = "identity_stronghold", tag = "wasm-v1.6.0-beta.4", features = ["send-sync-storage"] }
+identity-eddsa-verifier = { git = "https://github.com/iotaledger/identity.rs", package = "identity_eddsa_verifier", tag = "wasm-v1.6.0-beta.4" }
 
-identity_iota = { git = "https://github.com/iotaledger/identity.rs", tag = "v1.6.0-beta.2" }
 anyhow = "1.0.62"
-identity-eddsa-verifier = { git = "https://github.com/iotaledger/identity.rs", package = "identity_eddsa_verifier", tag = "v1.6.0-beta.2" }
-identity_storage = { git = "https://github.com/iotaledger/identity.rs", package = "identity_storage", tag = "v1.6.0-beta.2", features = [
-    "send-sync-storage",
-] }
-identity_stronghold = { git = "https://github.com/iotaledger/identity.rs", package = "identity_stronghold", tag = "v1.6.0-beta.2", features = [
-    "send-sync-storage",
-] }
-iota-sdk = { git = "https://github.com/iotaledger/iota.git", package = "iota-sdk", tag = "v0.12.0-rc" }
-iota-sdk-legacy = { package = "iota-sdk", version = "1.0", default-features = false, features = [
-    "tls",
-    "client",
-    "stronghold",
-] }
-
-product_common = { git = "https://github.com/iotaledger/product-core.git", tag = "v0.2.1", package = "product_common", features = [
-    "core-client",
-    "transaction",
-] }
+serde_json = "1.0"
 rand = "0.8.5"
-sd-jwt-payload = { version = "0.2.1", default-features = false, features = [
-    "sha",
-] }
+tokio = { version = "1.43", features = ["rt", "macros"] }
+
+# Keep these if you're using them
+iota-sdk = { git = "https://github.com/iotaledger/iota.git", package = "iota-sdk", tag = "v0.12.0-rc" }
+iota-sdk-legacy = { package = "iota-sdk", version = "1.0", default-features = false, features = ["tls", "client", "stronghold"] }
+product_common = { git = "https://github.com/iotaledger/product-core.git", tag = "v0.2.1", package = "product_common", features = ["core-client", "transaction"] }
+sd-jwt-payload = { version = "0.2.1", default-features = false, features = ["sha"] }
 secret-storage = { git = "https://github.com/iotaledger/secret-storage.git", tag = "v0.3.0" }
-serde_json = { version = "1.0", default-features = false }
-tokio = { version = "1.43", default-features = false, features = [
-    "rt",
-    "macros",
-] }
 
 shared_utils = { path = "./crates/shared_utils" }
 
