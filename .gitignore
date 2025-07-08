@@ -1,3 +1,11 @@
 /target
 Cargo.lock
 .vscode
+holder_doc.json
+holder_fragment.txt
+holder.stronghold
+vc.jwt
+vp.jwt
+issuer.stronghold
+issuer_doc.json
+issuer_fragment.txt

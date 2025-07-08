@@ -1,44 +1,47 @@
 // issuer.rs
 use anyhow::Result;
-use identity_iota::credential::{self, *};
-use identity_iota::core::{json, FromJson, Object, ToJson, Url};
+use identity_iota::core::{FromJson, ToJson, Url};
+use identity_iota::credential::{Credential, CredentialBuilder, Subject};
 use identity_iota::did::DID;
 use identity_iota::iota::IotaDocument;
-use identity_storage::{JwkStorage, JwsSignatureOptions};
-// use shared_utils::{create_did_document, get_funded_client, get_memstorage};
-use shared_utils::create_did_document;
-use shared_utils::get_memstorage;
-use shared_utils::get_funded_client;
+use identity_storage::{JwkDocumentExt, JwsSignatureOptions};
+use shared_utils::{create_did_document, get_funded_client, get_stronghold_storage};
 use std::fs;
-use identity_iota::verification::jws::JwsAlgorithm;
-use identity_storage::JwkDocumentExt as _;
-
-
+use std::path::PathBuf;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // === Create issuer identity ===
-    let issuer_storage = get_memstorage().await?;
+    let issuer_storage = get_stronghold_storage(Some(PathBuf::from("./issuer.stronghold")))?;
     let issuer_client = get_funded_client(&issuer_storage).await?;
-    let (issuer_doc, issuer_fragment) = create_did_document(&issuer_client, &issuer_storage).await?;
 
-    // === Create holder identity (DID only, key generation moved to holder.rs) ===
-    let holder_storage_for_did = get_memstorage().await?; // Temporary storage for DID creation
-    let holder_client_for_did = get_funded_client(&holder_storage_for_did).await?;
-    let (holder_doc, _holder_fragment) = create_did_document(&holder_client_for_did, &holder_storage_for_did).await?;
+    // Create issuer DID if not exists
+    let issuer_doc_file = "./issuer_doc.json";
+    let issuer_fragment_file = "./issuer_fragment.txt";
+    let (issuer_doc, issuer_fragment) = if !PathBuf::from(issuer_doc_file).exists() {
+        let (doc, frag) = create_did_document(&issuer_client, &issuer_storage).await?;
+        fs::write(issuer_doc_file, doc.to_json()?)?;
+        fs::write(issuer_fragment_file, &frag)?;
+        println!("✅ Created issuer DID: {}", doc.id());
+        (doc, frag)
+    } else {
+        let json = fs::read_to_string(issuer_doc_file)?;
+        let doc = IotaDocument::from_json(&json)?;
+        let frag = fs::read_to_string(issuer_fragment_file)?.trim().to_string();
+        (doc, frag)
+    };
 
-    // === Save holder DID doc ===
-    fs::write("holder_doc.json", holder_doc.to_json()?)?;
-    println!("✅ Exported holder DID doc");
+    // Load holder DID created by holder
+    let holder_doc_json = fs::read_to_string("./holder_doc.json")?;
+    let holder_doc = IotaDocument::from_json(&holder_doc_json)?;
+    println!("✅ Loaded holder DID: {}", holder_doc.id());
 
-    // === Issue VC ===
-    let subject = Subject::from_json_value(json!({
-        "id": holder_doc.id().as_str(), // Use the holder's public DID
+    // Build VC
+    let subject = Subject::from_json_value(serde_json::json!({
+        "id": holder_doc.id().as_str(),
         "name": "Alice",
         "degree": { "type": "BachelorDegree", "name": "Bachelor of Science and Arts" },
         "GPA": "4.0"
     }))?;
-
     let credential: Credential = CredentialBuilder::default()
         .id(Url::parse("https://example.edu/credentials/3732")?)
         .issuer(Url::parse(issuer_doc.id().as_str())?)
@@ -55,7 +58,8 @@ async fn main() -> Result<()> {
             None,
         )
         .await?;
-
     println!("✅ Created VC JWT:\n{}", credential_jwt.as_str());
+    fs::write("vc.jwt", credential_jwt.as_str())?;
+    println!("✅ Saved VC to vc.jwt");
     Ok(())
 }

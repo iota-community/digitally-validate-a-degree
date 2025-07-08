@@ -125,6 +125,21 @@ pub async fn get_memstorage() -> anyhow::Result<MemStorage> {
     Ok(MemStorage::new(JwkMemStore::new(), KeyIdMemstore::new()))
 }
 
+pub fn get_stronghold_storage(
+    path: Option<PathBuf>,
+) -> Result<Storage<StrongholdStorage, StrongholdStorage>, anyhow::Error> {
+    let path = path.unwrap_or_else(random_stronghold_path);
+    let password = Password::from("secure_password".to_owned());
+    let stronghold = StrongholdSecretManager::builder()
+        .password(password.clone())
+        .build(path.clone())?;
+    let stronghold_storage = StrongholdStorage::new(stronghold);
+    Ok(Storage::new(
+        stronghold_storage.clone(),
+        stronghold_storage.clone(),
+    ))
+}
+
 pub fn pretty_print_json(label: &str, value: &str) {
     let data: Value = serde_json::from_str(value).unwrap();
     let pretty_json = serde_json::to_string_pretty(&data).unwrap();
