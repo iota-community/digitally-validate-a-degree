@@ -10,11 +10,7 @@ Before you begin, make sure you have:
 
 - Rust installed (stable)
 - Setup a local IOTA node and request test tokens from faucet
-
-:::info
-The holder and issuer will publish their DIDs to this local network, so it must be running first. See how to set up a local [IOTA Network](https://docs.iota.org/developer/iota-identity/getting-started/local-network-setup)
-:::
-
+- The holder and issuer will publish their DIDs to this local network, so it must be running first. See how to set up a local [IOTA Network](https://docs.iota.org/developer/iota-identity/getting-started/local-network-setup)
 - Deploy the IOTA [identity contract](https://github.com/iotaledger/identity) to your local node. See how to do this [here](https://docs.iota.org/developer/iota-identity/getting-started/local-network-setup#publish-the-iota-identity-package)
 
 ```mermaid
@@ -42,7 +38,7 @@ sequenceDiagram
 
 ---
 
-## 📦 Installation
+## 📦 How to run the project
 
 1. **Clone this repository:**
 
@@ -56,6 +52,8 @@ cd digitally_validate_degree
 ```bash
 cargo build
 ```
+
+Then follow these 4 steps in order:
 
 **Step 1: Holder creates their DID**
 
@@ -90,7 +88,7 @@ This will:
 Alice receives the VC and creates a VP to send to the IOTA Foundation.
 
 ```bash
-IOTA_IDENTITY_PKG_ID=your-package-id cargo run --bin holder -- --vc "<PASTE_VC_JWT_HERE>"
+IOTA_IDENTITY_PKG_ID=your-package-id cargo run --bin holder --vc "<PASTE_VC_JWT_HERE>"
 ```
 
 This will:
