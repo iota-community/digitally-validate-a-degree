@@ -44,7 +44,7 @@ sequenceDiagram
 
 ```bash
 git clone git clone https://github.com/iota-community/digitally-validate-a-degree.git
-cd digitally_validate_degree
+cd digitally-validate-a-degree
 ```
 
 2. **Install dependencies**
